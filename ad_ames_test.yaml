@@ -1,0 +1,66 @@
+# Base directory for all output
+base_output_dir: 'results'
+
+# Optional: suppress standard logging output globally
+quiet: False
+
+# List of datasets to process in a single run
+datasets:
+  
+  - name: 'AMES'
+    train_path: 'data_enriched/AMES/AMES_train.csv'
+    test_path: 'data_enriched/AMES/ames_preds.xlsx'
+    id_col: 'Drug_ID'
+    smiles_col: 'Drug' # This SMILES is used for the preprocessing and descriptor calculation. Inside the code 'canon_smiles' is used for returning structures
+    activity_col: 'Y'
+    prediction_column: 'Pred_col' # To use if the test already has a prediction. Then use_qsar must be false.
+    descriptors: 'rdkit' # 'rdkit' or 'fps'. AD analysis descriptors
+    n_components: 2
+    model: 'pca' # 'pca' or 'pls'. AD analysis model.
+    feature_importance: 10
+    alpha: 0.05 # alpha to define the AD metrics thresholds, which are obtained using the percentile in the distribution of 1 - alpha. Values from 0 to 1. 0.05 default.
+    cluster_analysis: True
+    cluster_model: 'pls' # 'pca' or 'pls'. Used to get scores for clustering.
+    cluster_descriptors: 'fps' # 'rdkit' or 'fps'. Used to get descriptors for clustering.
+    cluster_algorithm: 'scaffolds' # 'kmeans', 'hierarchical', 'DBSCAN', 'scaffolds', 'atc', 'maxmin'
+    n_clusters: 100 # Only needed if cluster_algorithm is 'kmeans', 'hierarchical', 'DBSCAN' or 'maxmin'. None causes to use optimal number of clusters.
+    n_splits: 10
+    use_qsar: False # if True, it will create a qsar model internally and get the predictions from the test
+    generate_plots: True # if True, plots will be generated for single and CV analysis
+    qsar_model:
+      type: 'xgboost' # random_forest, xgboost
+      params:
+        n_estimators: 100
+        max_depth: 3
+        learning_rate: 0.3
+        booster: 'gbtree'
+        random_state: 42
+  
+  - name: 'AChE'
+    train_path: 'DNT_case_study/ache/AChE_fixed.xlsx'
+    test_path: 'DNT_case_study/ache/ache_preds_noconf.xlsx'
+    id_col: 'Molecule ChEMBL ID'
+    smiles_col: 'Smiles' # This SMILES is used for the preprocessing and descriptor calculation. Inside the code 'canon_smiles' is used for returning structures
+    activity_col: 'activity'
+    prediction_column: 'Pred_col' # To use if the test already has a prediction. Then use_qsar must be false.
+    descriptors: 'rdkit' # 'rdkit' or 'fps'. AD analysis descriptors
+    n_components: 2
+    model: 'pca' # 'pca' or 'pls'. AD analysis model.
+    feature_importance: 10
+    alpha: 0.05 # alpha to define the thresholds, which are obtained using the percentile in the distribution of 1 - alpha. Values from 0 to 1. 0.05 default.
+    cluster_analysis: True
+    cluster_model: 'pls' # 'pca' or 'pls'. Used to get scores for clustering.
+    cluster_descriptors: 'fps' # 'rdkit' or 'fps'. Used to get descriptors for clustering.
+    cluster_algorithm: 'scaffolds' # 'kmeans', 'hierarchical', 'DBSCAN', 'scaffolds', 'atc', 'maxmin'
+    n_clusters: 100 # Only needed if cluster_algorithm is 'kmeans', 'hierarchical', 'DBSCAN' or 'maxmin'. None causes to use optimal number of clusters.
+    n_splits: 10
+    use_qsar: False # if True, it will create a qsar model internally and get the predictions from the test. The 'use_qsar' flag will be automatically set to True by the script if it successfully loads the flame config.
+    generate_plots: True # if True, plots will be generated for single and CV analysis
+    qsar_model:
+      type: 'xgboost' # random_forest, xgboost
+      params:
+        n_estimators: 100
+        max_depth: 3
+        learning_rate: 0.3
+        booster: 'gbtree'
+        random_state: 42

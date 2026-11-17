@@ -1,0 +1,46 @@
+#
+# To recreate: conda env create -f environment.yml
+# To update:   conda env update -f environment.yml --prune
+#
+
+name: adtest_framework
+channels:
+  - conda-forge         # Primary: scientific stack
+  - defaults            # Fallback only
+
+dependencies:
+  - python=3.10.20
+
+  # ─── BLAS / Linear Algebra (pinned for reproducibility) ───
+  - libblas=3.9.0=*_netlib
+  - libcblas=3.9.0=*_netlib
+  - liblapack=3.9.0=*_netlib
+
+  # ─── Core Scientific Stack (pinned) ───
+  - numpy=2.2.6
+  - scipy=1.15.2
+  - scikit-learn=1.7.2
+  - pandas=2.3.3
+  - rdkit=2026.03.3
+  - xgboost=3.2.0
+  - joblib=1.5.2
+  - dill=0.4.1
+
+  # ─── Visualization ───
+  - matplotlib=3.10.9
+  - seaborn=0.13.2
+
+  # ─── Utilities & Thresholding ───
+  - kneed=0.8.6
+  - pyyaml=6.0.3
+  - python-docx=1.2.0
+  - appdirs=1.4.4
+  - tabulate=0.10.0
+  - openpyxl=3.1.5
+
+  # ─── Dev ───
+  - jupyterlab=4.5.9
+  - ipykernel=7.3.0
+
+  # ─── Pip (for git-only dependencies) ───
+  - pip=26.1.2
