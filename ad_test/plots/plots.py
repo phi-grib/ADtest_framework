@@ -1,23 +1,5 @@
 """
-This module defines the Plotter class for visualizing dimensionality reduction results and outlier detection
-using PCA and PLS. The class leverages matplotlib, seaborn, and scikit-learn to generate scatter plots of
-the first two principal or latent components, color-coded by local density (kNN average distance), and
-highlighting outliers. It also supports plotting Hotelling's T² ellipse for visualizing multivariate
-distance.
-
-Classes:
-    Plotter: Provides methods for plotting PCA and PLS results, including density-based outlier
-    visualization and explained variance annotation, and interactive clustering plots.
-
-Dependencies:
-    - matplotlib
-    - numpy
-    - pandas
-    - seaborn
-    - plotly
-    - bokeh
-    - rdkit
-    - scipy
+This module defines the Plotter class for visualizing results.
 
 Author: Eric March Vila (eric.march@upf.edu)
 Created: 2025-09-01
