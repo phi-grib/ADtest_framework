@@ -9,17 +9,14 @@ Created: 2025-09-17
 import numpy as np
 import pandas as pd
 
-from kneed import KneeLocator
 from rdkit import Chem
 from rdkit.Chem import AllChem
 from rdkit.Chem.Scaffolds import MurckoScaffold
 from rdkit import DataStructs
-from scipy.cluster.hierarchy import linkage
-from sklearn.neighbors import NearestNeighbors
-from sklearn.cluster import MiniBatchKMeans, KMeans, AgglomerativeClustering, DBSCAN
+from sklearn.cluster import AgglomerativeClustering
 from sklearn.model_selection import StratifiedGroupKFold
-from sklearn.metrics import silhouette_score, pairwise_distances
-from typing import Optional, Union, Generator, Tuple, List
+from sklearn.metrics import pairwise_distances
+from typing import Optional, Generator, Tuple
 
 from .plots.plots import Plotter
 from .utils.logger import LOG
@@ -28,15 +25,9 @@ class ClusteringCrossValidator:
     """
     A robust cross-validator that generates folds based on clustering
     and ensures stratification by class label.
-
-    This class first performs clustering to define groups of
-    chemically similar compounds and then uses scikit-learn's
-    StratifiedGroupKFold to generate the folds. It supports various
-    clustering methods, including structural grouping by Murcko scaffolds
-    and dissimilarity-based selection using MaxMin.
     """
 
-    def __init__(self, n_splits: int = 5, n_clusters: Optional[int] = None, method: str = 'kmeans',
+    def __init__(self, n_splits: int = 5, n_clusters: Optional[int] = None, method: str = 'scaffolds',
                  random_state: int = 42, 
                  df: Optional[pd.DataFrame] = None, smiles_column: Optional[str] = None,
                  logger: Optional[LOG] = None):
@@ -44,18 +35,16 @@ class ClusteringCrossValidator:
         Initializes the cross-validator.
         
         Args for all methods:
-            method (str): The clustering algorithm to use. Options are 'kmeans',
-                          'hierarchical', 'dbscan', or 'scaffolds'. Defaults to 'kmeans'.
+            method (str): The clustering algorithm to use. Defaults to 'scaffolds'.
             n_clusters (int, optional): The number of clusters to create. If None,
                                         the 'auto_split' method will attempt to find the optimal k.
             n_splits (int): The number of splits (folds) for cross-validation.
             random_state (int, optional): Seed for reproducibility. Defaults to 42.
             
-         Args specifically for 'scaffolds' or 'maxmin':
+         Args specifically for 'scaffolds':
             df (pd.DataFrame, optional): The DataFrame containing SMILES strings.
-                                         Required if method='scaffolds' or 'maxmin'.
+
             smiles_column (str, optional): The column name with SMILES strings in the DataFrame.
-                                           Required if method='scaffolds' or 'maxmin'.
         """
         
         if logger:
@@ -233,13 +222,12 @@ class ClusteringCrossValidator:
             class_breakdown = pd.DataFrame({'label': self.labels_, 'class': y}).groupby('label')['class'].value_counts().unstack(fill_value=0)
             summary_df = summary_df.merge(class_breakdown, on='label', how='left').fillna(0)
 
-        # Determine the number of actual clusters (excluding noise for DBSCAN/invalid SMILES)
-        # --- MODIFIED --- Also check for -1 from maxmin/scaffolds
-        if self.method in ['dbscan', 'maxmin', 'scaffolds'] or 'MISSING' in unique_labels:
+        # Determine the number of actual clusters
+        # --- MODIFIED --- Also check for -1 from scaffolds
+        if self.method in ['scaffolds'] or 'MISSING' in unique_labels:
             non_noise_labels = [l for l in unique_labels if l not in [-1, 'MISSING', 'INVALID']]
             num_clusters = len(non_noise_labels)
         else:
-            # For object/string labels (ATC), nunique is safer
             num_clusters = pd.Series(self.labels_).nunique()
 
         self.logger.info(f"{self.method.upper()} clustering complete. Found {num_clusters} clusters.")
@@ -307,14 +295,14 @@ class ClusteringCrossValidator:
         # Re-check n_splits vs unique groups just before splitting
         # Robustly determine the number of unique groups before checking against n_splits
         if self.labels_.dtype == object:
-            # For string labels (ATC/Scaffolds), count all unique strings
+            # For string labels count all unique strings
             unique_groups_set = set(np.unique(self.labels_))
             # Remove any 'missing' or 'invalid' type labels from the count
             unique_groups_set.discard("MISSING")
             unique_groups_set.discard("INVALID")
             unique_groups = len(unique_groups_set)
         else:
-            # For numerical labels (KMeans/Hierarchical/DBSCAN/MaxMin), filter out noise points (-1)
+            # For numerical labels filter out noise points (-1)
             unique_groups = len(np.unique(self.labels_[self.labels_ >= 0]))
         
         if unique_groups < self.n_splits:
@@ -382,7 +370,7 @@ class ClusteringCrossValidator:
         # Create a temporary DataFrame for easier analysis
         temp_df = pd.DataFrame({'cluster': self.labels_, 'activity': y})
         
-        # Get unique cluster labels, handling potential noise cluster (-1) from DBSCAN
+        # Get unique cluster labels, handling potential noise cluster
         unique_labels = sorted(temp_df['cluster'].unique())
 
         for label in unique_labels:

@@ -16,7 +16,6 @@ Refactored: 2026-08-10
 """
 
 import argparse
-import sys
 
 from . import context as ctx
 
