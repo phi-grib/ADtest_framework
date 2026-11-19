@@ -1,9 +1,6 @@
 """
 This module calls data curation to add descriptors to the passed training and test series
 
-Functions:
-    - describe_series: Returns a pandas DataFrame with descriptors for each series.
-
 Author: Eric March (eric.march@upf.edu)
 Created: 2025-09-01
 """
