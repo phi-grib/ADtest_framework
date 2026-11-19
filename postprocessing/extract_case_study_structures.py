@@ -164,8 +164,8 @@ def process_ache():
 
     train_df = pd.read_excel(ACHE_TRAIN_FILE)
 
-    test_id_col, test_smiles_col = resolve_cols(test_df, default_smiles="Smiles", default_id="Drug_ID")
-    train_id_col, train_smiles_col = resolve_cols(train_df, default_smiles="Smiles", default_id="Molecule ChEMBL ID")
+    test_id_col, test_smiles_col = resolve_cols(test_df, default_smiles="canon_smiles", default_id="Molecule ChEMBL ID")
+    train_id_col, train_smiles_col = resolve_cols(train_df, default_smiles="structure_curated", default_id="Molecule ChEMBL ID")
 
     print(f"AChE Test  -> ID: '{test_id_col}' | SMILES: '{test_smiles_col}'")
     print(f"AChE Train -> ID: '{train_id_col}' | SMILES: '{train_smiles_col}'")
