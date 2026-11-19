@@ -4,7 +4,8 @@ Handles the generation of final reports in different formats.
 - Human-readable .docx report with summaries, plots, and log excerpts.
 - Machine-readable .yaml report with structured results.
 
-Refactored for Paper 1
+Author: Eric March Vila (eric.march@upf.edu)
+Created: 2025-11-17
 """
 
 import os
