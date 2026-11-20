@@ -8,6 +8,7 @@ Applicability Domain analysis defines the boundaries within which a QSAR model's
 
 ### ⚙️ Prerequisites
 
+* **Operating System**: Developed and tested exclusively on **Ubuntu Linux** (tested on **Ubuntu 24.04 LTS** and **26.04 LTS**). Compatibility with **macOS** (likely functional via Conda) and **Windows** has not been tested and is provided without warranty.
 * **Python 3.10**: the project is built for this specific Python version.
 * **Conda**: a package and environment management system, highly recommended.
 
